@@ -217,7 +217,7 @@ function runCode(app, puzzles) {
 
     // CONFIGURATION
     const sensitivity = -0.001;  // Inverted movement
-    const maxRotation = 0.2;     // Maximum rotation (~11 degrees)
+    const maxRotation = 0.4;     // Maximum rotation (~11 degrees)
     const rotationAxis = 'y';    // 'y' for left/right or 'x' for up/down
 
     const windowCenterX = window.innerWidth / 2;
