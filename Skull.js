@@ -210,42 +210,48 @@ function prepareExternalInterface(app) {
 
 function runCode(app, puzzles) {
     const skull = app.scene.getObjectByName('20250206_145107_mesh');
-    if (!skull) {
+  if (!skull) {
         console.error('Skull object not found!');
         return;
     }
 
-    // CONFIGURATION: Set sensitivity and max rotation limits
+    // CONFIGURATION
     const sensitivity = -0.001;  // Inverted movement
-    const maxRotation = 0.5;     // Maximum rotation in radians (~11 degrees)
-
-    // TOGGLE AXIS: Set to 'y' for left/right or 'x' for up/down
-    const rotationAxis = 'y';  // Change to 'x' for vertical movement (up/down)
+    const maxRotation = 0.2;     // Maximum rotation (~11 degrees)
+    const rotationAxis = 'y';    // 'y' for left/right or 'x' for up/down
 
     const windowCenterX = window.innerWidth / 2;
     const windowCenterY = window.innerHeight / 2;
 
     let targetRotation = 0;
 
+    // MOUSE MOVE EVENT (Desktop)
     document.addEventListener('mousemove', (event) => {
         if (rotationAxis === 'y') {
-            // Left/Right movement (horizontal)
             targetRotation = (event.clientX - windowCenterX) * sensitivity;
         } else if (rotationAxis === 'x') {
-            // Up/Down movement (vertical)
             targetRotation = (event.clientY - windowCenterY) * sensitivity;
         }
-
-        // Limit the rotation range
         targetRotation = Math.max(-maxRotation, Math.min(maxRotation, targetRotation));
     });
 
-    // Apply smooth, limited rotation to the selected axis
+    // TOUCH MOVE EVENT (Mobile)
+    document.addEventListener('touchmove', (event) => {
+        const touch = event.touches[0];  // Get the first touch point
+        if (rotationAxis === 'y') {
+            targetRotation = (touch.clientX - windowCenterX) * sensitivity;
+        } else if (rotationAxis === 'x') {
+            targetRotation = (touch.clientY - windowCenterY) * sensitivity;
+        }
+        targetRotation = Math.max(-maxRotation, Math.min(maxRotation, targetRotation));
+    }, { passive: true });  // passive:true for better performance on mobile
+
+    // SMOOTH ANIMATION
     app.addEventListener('beforeRender', () => {
         if (rotationAxis === 'y') {
-            skull.rotation.y += (targetRotation - skull.rotation.y) * 0.02;  // Left/Right
+            skull.rotation.y += (targetRotation - skull.rotation.y) * 0.02;
         } else if (rotationAxis === 'x') {
-            skull.rotation.x += (targetRotation - skull.rotation.x) * 0.02;  // Up/Down
+            skull.rotation.x += (targetRotation - skull.rotation.x) * 0.02;
         }
     });
 }
